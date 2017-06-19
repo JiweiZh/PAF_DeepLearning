@@ -28,7 +28,7 @@ def read_image(filename):
         index += struct.calcsize('>B')
 
 
-    print 'save ' + str(i) + 'image'
+    print('save ' + str(i) + 'image')
     image.save('test' + str(i) + '.png')
 
 
@@ -62,9 +62,9 @@ def read_label(filename, saveFilename):
 
 
   save.close()
-  print 'save labels success'
+  print('save labels success')
 
 
 if __name__ == '__main__':
   #read_image('train-images.idx3-ubyte')
-  read_label('train-labels.idx1-ubyte', 'Mnist_data/label.txt')
+  read_label('train-labels-idx1-ubyte.gz', 'Mnist_data/label.txt')
