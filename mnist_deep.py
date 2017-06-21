@@ -27,6 +27,7 @@ from __future__ import print_function
 
 import argparse
 import sys
+import modifications as md
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -115,6 +116,10 @@ def main(_):
   # Import data
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
+  lam=300
+  for i in range(len(mnist.test.images)):
+      mnist.test.images[i]=md.error1(md.graylevels_to_bandw(mnist.test.images[i]),lam)
+
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
 
@@ -132,13 +137,14 @@ def main(_):
 
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(20000):
+    print("\n----- type of mnist.test.images -----\n",type(mnist.test.images))
+    for i in range(1500):
       batch = mnist.train.next_batch(50)
       if i % 100 == 0:
         train_accuracy = accuracy.eval(feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 1.0})
+            x: md.graylevels_to_bandw(batch[0]), y_: batch[1], keep_prob: 1.0})
         print('step %d, training accuracy %g' % (i, train_accuracy))
-      train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+      train_step.run(feed_dict={x: md.graylevels_to_bandw(batch[0]), y_: batch[1], keep_prob: 0.5})
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
