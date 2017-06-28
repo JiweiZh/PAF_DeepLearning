@@ -27,13 +27,16 @@ from __future__ import print_function
 
 import argparse
 import sys
+import modifications as md
+import numpy as np
 
 from tensorflow.examples.tutorials.mnist import input_data
 
 import tensorflow as tf
 
 FLAGS = None
-
+l=0
+s=(28-2*l)**2
 
 def deepnn(x):
   """deepnn builds the graph for a deep net for classifying digits.
@@ -115,6 +118,10 @@ def main(_):
   # Import data
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
+  number_of_iterations = int(input('Time of learning :\nHow many iterations do you want the program to do during the learning time ? '))
+
+  size=28
+
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
 
@@ -132,16 +139,49 @@ def main(_):
 
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(20000):
+    print("\n----- type of mnist.test.images -----\n",type(mnist.test.images))
+    for i in range(number_of_iterations):
       batch = mnist.train.next_batch(50)
+      a=batch[0]
       if i % 100 == 0:
         train_accuracy = accuracy.eval(feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 1.0})
+            x: a, y_: batch[1], keep_prob: 1.0})
         print('step %d, training accuracy %g' % (i, train_accuracy))
-      train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+      train_step.run(feed_dict={x: a, y_: batch[1], keep_prob: 0.5})
 
-    print('test accuracy %g' % accuracy.eval(feed_dict={
-        x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+
+    while True:
+        q=''
+        number_of_errors=-1
+        bits_per_pixel=-1
+        while not (q=='no' or q=='yes'):
+            q=input("Do you want to continue ? (Type \'yes\' to make a new simulation, \'no\' otherwise) ")
+        if q=='no':
+            break
+        else:
+            while not (0<=number_of_errors<=size**2 and 0<=bits_per_pixel<=8):
+                try:
+                    number_of_errors=int(input("Which average number of fake pixels do you want ? (type a number between 0 and {}) ".format(size**2)))
+                except ValueError:
+                    print('Invalid Number')
+                try:
+                    bits_per_pixel=int(input("How many bits do you want the pixels to be represented on ? (type a number between 1 and 8) "))
+                except ValueError:
+                    print('Invalid Number')
+            test= np.copy(mnist.test.images)
+            test=md.new_resolution(test,bits_per_pixel)
+            for k in range(len(test)):
+                test[k]=md.error1(test[k],number_of_errors)
+            print('errors = {} ------ test accuracy {}'.format(number_of_errors,accuracy.eval(feed_dict={
+            x: test, y_: mnist.test.labels, keep_prob: 1.0})))
+
+
+    #for n in np.arange(0,601,50):
+    #    test= np.copy(mnist.test.images)
+    #    for k in range(len(test)):
+    #        test[k]=md.error1(test[k],n)
+    #    print('errors = {} ------ test accuracy {}'.format(n,accuracy.eval(feed_dict={
+    #    x: test, y_: mnist.test.labels, keep_prob: 1.0})))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
