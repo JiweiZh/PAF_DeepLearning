@@ -29,6 +29,7 @@ import argparse
 import sys
 import modifications as md
 import numpy as np
+import matplotlib.pyplot as plt
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -121,6 +122,8 @@ def main(_):
   number_of_iterations = int(input('Time of learning :\nHow many iterations do you want the program to do during the learning time ? '))
 
   size=28
+  
+  X=np.arange(0,600,50)
 
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
@@ -137,9 +140,10 @@ def main(_):
   correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+
+
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    print("\n----- type of mnist.test.images -----\n",type(mnist.test.images))
     for i in range(number_of_iterations):
       batch = mnist.train.next_batch(50)
       a=batch[0]
@@ -149,31 +153,43 @@ def main(_):
         print('step %d, training accuracy %g' % (i, train_accuracy))
       train_step.run(feed_dict={x: a, y_: batch[1], keep_prob: 0.5})
 
+    Y=[]
+    for e in X:
+        test= np.copy(mnist.test.images)
+#            test=md.new_resolution(test,bits_per_pixel)
+        for k in range(len(test)):
+            test[k]=md.error1(test[k],e)
+        Y.append(accuracy.eval(feed_dict={x: test, y_: mnist.test.labels, keep_prob: 1.0}))
+    
+    plt.plot(X,Y,'r')
+    plt.show()
 
-    while True:
-        q=''
-        number_of_errors=-1
-        bits_per_pixel=-1
-        while not (q=='no' or q=='yes'):
-            q=input("Do you want to continue ? (Type \'yes\' to make a new simulation, \'no\' otherwise) ")
-        if q=='no':
-            break
-        else:
-            while not (0<=number_of_errors<=size**2 and 0<=bits_per_pixel<=8):
-                try:
-                    number_of_errors=int(input("Which average number of fake pixels do you want ? (type a number between 0 and {}) ".format(size**2)))
-                except ValueError:
-                    print('Invalid Number')
-                try:
-                    bits_per_pixel=int(input("How many bits do you want the pixels to be represented on ? (type a number between 1 and 8) "))
-                except ValueError:
-                    print('Invalid Number')
-            test= np.copy(mnist.test.images)
-            test=md.new_resolution(test,bits_per_pixel)
-            for k in range(len(test)):
-                test[k]=md.error1(test[k],number_of_errors)
-            print('errors = {} ------ test accuracy {}'.format(number_of_errors,accuracy.eval(feed_dict={
-            x: test, y_: mnist.test.labels, keep_prob: 1.0})))
+#==============================================================================
+#     while True:
+#         q=''
+#         number_of_errors=-1
+#         bits_per_pixel=-1
+#         while not (q=='no' or q=='yes'):
+#             q=input("Do you want to continue ? (Type \'yes\' to make a new simulation, \'no\' otherwise) ")
+#         if q=='no':
+#             break
+#         else:
+#             while not (0<=number_of_errors<=size**2 and 0<=bits_per_pixel<=8):
+#                 try:
+#                     number_of_errors=int(input("Which average number of fake pixels do you want ? (type a number between 0 and {}) ".format(size**2)))
+#                 except ValueError:
+#                     print('Invalid Number')
+#                 try:
+#                     bits_per_pixel=int(input("How many bits do you want the pixels to be represented on ? (type a number between 1 and 8) "))
+#                 except ValueError:
+#                     print('Invalid Number')
+#             test= np.copy(mnist.test.images)
+#             test=md.new_resolution(test,bits_per_pixel)
+#             for k in range(len(test)):
+#                 test[k]=md.error1(test[k],number_of_errors)
+#             print('errors = {} ------ test accuracy {}'.format(number_of_errors,accuracy.eval(feed_dict={
+#             x: test, y_: mnist.test.labels, keep_prob: 1.0})))
+#==============================================================================
 
 
     #for n in np.arange(0,601,50):

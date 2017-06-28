@@ -29,19 +29,20 @@ On tire au sort number_of_errors numeros representant les pixels a changer : ils
 on change ces pixels
 """
 
-def error1(tab,lam):
-    number_of_errors = min(784,np.random.poisson(lam))
-    pix_to_change = np.random.choice(784,number_of_errors,replace=False)
+def error1(tab,lam,px=784):
+    number_of_errors = min(px,np.random.poisson(lam))
+    pix_to_change = np.random.choice(px,number_of_errors,replace=False)
     res = np.copy(tab)
     for i in pix_to_change:
-        res[i]=change_pix()
+        res[i]=np.random.random()
     return res
 
-def error2(tab,number_of_errors):
-    pix_to_change = np.random.choice(784,min(784,number_of_errors),replace=False)
+def error2(tab,lam,px=784):
+    number_of_errors = min(px,np.random.poisson(lam))
+    pix_to_change = np.random.choice(px,number_of_errors,replace=False)
     res = np.copy(tab)
     for i in pix_to_change:
-        res[i]=change_pix()
+        res[i][0]=np.random.random()
     return res
 
 #def binary_error2(tab,p):

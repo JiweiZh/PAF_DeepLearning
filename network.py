@@ -58,12 +58,12 @@ class Network(object):
         tracking progress, but slows things down substantially."""
 
         training_data = list(training_data)
-        training_data1=resizeall(training_data)
+        training_data1=resizeall(training_data,nb_px)
         n = len(training_data1)
 
         if test_data:
             test_data0 = list(test_data)
-            test_data1 = resizeall(test_data0)
+            test_data1 = resizeall(test_data0,nb_px)
             n_test = len(test_data1)
 
         for j in range(epochs):
@@ -146,12 +146,12 @@ class Network(object):
         return (output_activations-y)
 
 #### Miscellaneous functions
-def resizeall(data):
+def resizeall(data,px=nb_px):
     res = []
     for i in range(len(data)):
         a = np.reshape(data[i][0], (28, 28))
-        a = misc.imresize(a, (nb_px, nb_px))/255
-        a = np.reshape(a, (nb_px**2,1))
+        a = misc.imresize(a, (px, px))/255
+        a = np.reshape(a, (px**2,1))
         res.append((a, data[i][1]))
     return res
 
