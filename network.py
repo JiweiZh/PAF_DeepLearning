@@ -19,7 +19,7 @@ import random
 import numpy as np
 from scipy import misc
 
-nb_px = 14
+nb_px = 28
 
 class Network(object):
 
@@ -58,23 +58,12 @@ class Network(object):
         tracking progress, but slows things down substantially."""
 
         training_data = list(training_data)
-        training_data1 = []
-        for i in range(10000):
-            a = np.reshape(training_data[i][0], (28, 28))
-            a = misc.imresize(a, (nb_px, nb_px))
-            a = np.reshape(a, (1, nb_px*nb_px))
-            training_data1.append((a, training_data[i][1]))
+        training_data1=resizeall(training_data)
         n = len(training_data1)
 
         if test_data:
-            test_data = list(test_data)
-            test_data1 = []
-            #print(len(test_data[0][0]))
-            for i in range(10000):
-                a = np.reshape(test_data[i][0],(28,28))
-                a = misc.imresize(a,(nb_px,nb_px))
-                a = np.reshape(a,(1,nb_px*nb_px))
-                test_data1.append((a,test_data[i][1]))
+            test_data0 = list(test_data)
+            test_data1 = resizeall(test_data0)
             n_test = len(test_data1)
 
         for j in range(epochs):
@@ -82,12 +71,12 @@ class Network(object):
             mini_batches = [
                 training_data1[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
+            
             for mini_batch in mini_batches:
-                #print('xxxxxxxxxx\n\n\n\n', mini_batch)
                 self.update_mini_batch(mini_batch, eta)
-
+            
             if test_data1:
-                print("Epoch {} : {} / {}".format(j,self.evaluate(test_data1),n_test));
+                print("Epoch {} : {} / {}".format(j,self.evaluate(test_data1),n_test))
             else:
                 print("Epoch {} complete".format(j))
 
@@ -116,15 +105,9 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # feedforward
         activation = x
-        #print(activation)
         activations = [x] # list to store all the activations, layer by layer
         zs = [] # list to store all the z vectors, layer by layer
-        i=1
         for b, w in zip(self.biases, self.weights):
-            i+=1
-            if i%2==0:
-                activation = activation.transpose()
-
             z = np.dot(w, activation)+b
             zs.append(z)
             activation = sigmoid(z)
@@ -163,6 +146,15 @@ class Network(object):
         return (output_activations-y)
 
 #### Miscellaneous functions
+def resizeall(data):
+    res = []
+    for i in range(len(data)):
+        a = np.reshape(data[i][0], (28, 28))
+        a = misc.imresize(a, (nb_px, nb_px))/255
+        a = np.reshape(a, (nb_px**2,1))
+        res.append((a, data[i][1]))
+    return res
+
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
