@@ -83,20 +83,21 @@ print("test accuracy %g" % accuracy.eval(feed_dict={
 keep_prob = tf.placeholder(tf.float32)
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-feed_dict = {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}
-inferred_labels = tf.argmax(y_conv, 1).eval(feed_dict=feed_dict)
-correct_labels = tf.argmax(y_, 1).eval(feed_dict=feed_dict)
-is_correct = tf.equal(tf.argmax(y_, 1), tf.argmax(y_conv, 1)).eval(feed_dict=feed_dict)
-misclassified_idxs = np.arange(len(mnist.test.images))[~is_correct]
-plt.figure(figsize=(18, 8))
-subplot = 1
-plt.show()
-for i in np.random.choice(misclassified_idxs, size=10, replace=False):
-    plt.subplot(2, 6, subplot)
-    plt.imshow(mnist.test.images[i].reshape(28, 28))
+# a simple visualisation for the numbers where we classify. For watching, copy all the code in this programme in ipython notebook
+#feed_dict = {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}
+#inferred_labels = tf.argmax(y_conv, 1).eval(feed_dict=feed_dict)
+#correct_labels = tf.argmax(y_, 1).eval(feed_dict=feed_dict)
+#is_correct = tf.equal(tf.argmax(y_, 1), tf.argmax(y_conv, 1)).eval(feed_dict=feed_dict)
+#misclassified_idxs = np.arange(len(mnist.test.images))[~is_correct]
+#plt.figure(figsize=(18, 8))
+#subplot = 1
+#plt.show()
+#for i in np.random.choice(misclassified_idxs, size=10, replace=False):
+#    plt.subplot(2, 6, subplot)
+#    plt.imshow(mnist.test.images[i].reshape(28, 28))
 
-    subplot += 1
-    title = 'Classified as {} should be {}'.format(inferred_labels[i],
+#    subplot += 1
+#    title = 'Classified as {} should be {}'.format(inferred_labels[i],
                                                    correct_labels[i])
-    plt.title(title)
-    plt.show()
+#    plt.title(title)
+#    plt.show()
